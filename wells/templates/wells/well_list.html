@@ -1,0 +1,57 @@
+{% extends "wells/base.html" %}
+{% block title %}Wells - Petrolog{% endblock %}
+{% block content %}
+<h1>Wells</h1>
+
+<div class="card">
+  <h3 style="margin-top:0">Upload a LAS file</h3>
+  <form method="post" enctype="multipart/form-data">{% csrf_token %}
+    {{ form.non_field_errors }}
+    <div class="grid">
+      <div><label>{{ form.name.label }}{{ form.name }}<span class="help">{{ form.name.help_text }}</span>{{ form.name.errors }}</label></div>
+      <div><label>LAS file{{ form.las_file }}{{ form.las_file.errors }}</label></div>
+    </div>
+    <p><button class="btn" type="submit">Upload</button></p>
+  </form>
+</div>
+
+{% if wells %}
+<div class="card">
+  <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+    <h3 style="margin:0">Select a suitable well</h3>
+    <form method="post" action="{% url 'screen_all' %}">{% csrf_token %}
+      <button class="btn secondary" type="submit">Screen all unanalysed wells (default parameters)</button>
+    </form>
+  </div>
+  <p style="color:var(--muted);font-size:.9rem">A well is suitable when it has identifiable gas, oil and water zones, good key logs (GR, RHOB, NPHI, RT) and limited bad hole.
+  Screening uses default parameters and an automatically estimated Rw, so re-run with proper parameters before relying on the result.</p>
+  {% if ranked %}
+  <div class="tbl"><table>
+    <tr><th>Rank</th><th>Well</th><th>Score</th><th>Suitable</th><th>Gas (m)</th><th>Oil (m)</th><th>Water (m)</th><th></th></tr>
+    {% for w in ranked %}{% with a=w.latest_analysis %}
+    <tr>
+      <td>{{ forloop.counter }}</td><td><a href="{{ w.get_absolute_url }}">{{ w.name }}</a></td>
+      <td>{{ a.score }}/9</td>
+      <td>{% if a.suitable %}<span class="pass">Yes</span>{% else %}<span class="fail">No</span>{% endif %}</td>
+      <td>{{ a.summary.fluids.suitability.thickness_by_fluid_m.gas }}</td>
+      <td>{{ a.summary.fluids.suitability.thickness_by_fluid_m.oil }}</td>
+      <td>{{ a.summary.fluids.suitability.thickness_by_fluid_m.water }}</td>
+      <td><a href="{{ a.get_absolute_url }}">Report</a></td>
+    </tr>{% endwith %}{% endfor %}
+  </table></div>
+  {% else %}<p>No analyses yet.</p>{% endif %}
+</div>
+
+<div class="card">
+  <h3 style="margin-top:0">All wells</h3>
+  <div class="tbl"><table>
+    <tr><th>Name</th><th>Interval</th><th>Curves</th><th>Uploaded</th></tr>
+    {% for w in wells %}
+    <tr><td><a href="{{ w.get_absolute_url }}">{{ w.name }}</a></td>
+        <td>{{ w.top|floatformat:1 }} - {{ w.base|floatformat:1 }} {{ w.depth_unit }}</td>
+        <td>{{ w.curve_names|join:", " }}</td><td>{{ w.uploaded_at|date:"Y-m-d H:i" }}</td></tr>
+    {% endfor %}
+  </table></div>
+</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,35 @@
+{% extends "wells/base.html" %}
+{% block title %}{{ well.name }} - Petrolog{% endblock %}
+{% block content %}
+<h1>{{ well.name }}</h1>
+<p>Interval {{ well.top|floatformat:1 }} - {{ well.base|floatformat:1 }} {{ well.depth_unit }} &middot; Curves: {{ well.curve_names|join:", " }}</p>
+
+{% if analyses %}
+<div class="card">
+  <h3 style="margin-top:0">Previous analyses</h3>
+  <ul>{% for a in analyses %}
+    <li><a href="{{ a.get_absolute_url }}">{{ a.created_at|date:"Y-m-d H:i" }}</a> - score {{ a.score }}/9, {% if a.suitable %}suitable{% else %}not suitable{% endif %}</li>
+  {% endfor %}</ul>
+</div>
+{% endif %}
+
+<h2>Run evaluation</h2>
+<p style="color:var(--muted)">Leave a field blank to use its default or automatic estimate. The more of these you supply from core, mud reports and water analyses, the better the saturation results.</p>
+<form method="post">{% csrf_token %}
+  {{ form.non_field_errors }}
+  {% for title, fields in form.grouped %}
+  <fieldset><legend>{{ title }}</legend>
+    <div class="grid">
+      {% for f in fields %}
+      <div><label>{{ f.label }} {{ f }}{% if f.help_text %}<span class="help">{{ f.help_text }}</span>{% endif %}{{ f.errors }}</label></div>
+      {% endfor %}
+    </div>
+  </fieldset>
+  {% endfor %}
+  <div class="actions"><button class="btn" type="submit">Run evaluation</button></div>
+</form>
+
+<form method="post" action="{% url 'well_delete' well.pk %}" onsubmit="return confirm('Delete this well and its analyses?')">{% csrf_token %}
+  <button class="btn danger" type="submit">Delete well</button>
+</form>
+{% endblock %}

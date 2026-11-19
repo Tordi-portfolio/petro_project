@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}Petrolog{% endblock %}</title>
+<style>
+  :root{--bg:#fafafa;--fg:#1c1c1c;--muted:#666;--line:#d8d8d8;--accent:#1b5e8a;--ok:#2e7d32;--bad:#b3261e}
+  *{box-sizing:border-box}
+  body{font-family:system-ui,Segoe UI,Arial,sans-serif;margin:0;background:var(--bg);color:var(--fg);line-height:1.5}
+  header{background:#12313f;color:#fff;padding:10px 20px;display:flex;gap:20px;align-items:baseline}
+  header a{color:#fff;text-decoration:none;font-weight:600}
+  main{max-width:1200px;margin:20px auto;padding:0 16px}
+  h1{font-size:1.5rem;margin:.2rem 0 1rem} h2{border-bottom:2px solid var(--line);padding-bottom:4px;margin-top:2rem}
+  .card{background:#fff;border:1px solid var(--line);border-radius:6px;padding:14px 16px;margin-bottom:16px}
+  .tbl{overflow-x:auto;margin:10px 0}
+  table{border-collapse:collapse;font-size:.86rem;width:100%}
+  th,td{border:1px solid var(--line);padding:4px 8px;text-align:left;vertical-align:top} th{background:#f0f2f4}
+  .btn{display:inline-block;background:var(--accent);color:#fff;border:0;border-radius:4px;padding:7px 14px;cursor:pointer;text-decoration:none;font-size:.9rem}
+  .btn.secondary{background:#fff;color:var(--accent);border:1px solid var(--accent)} .btn.danger{background:var(--bad)}
+  .msg{padding:8px 12px;border-radius:4px;margin-bottom:8px;border:1px solid var(--line);background:#fff}
+  .msg.error{border-color:var(--bad);color:var(--bad)} .msg.success{border-color:var(--ok)} .msg.warning{border-color:#c77700}
+  .pass{color:var(--ok);font-weight:600}.fail{color:var(--bad);font-weight:600}
+  fieldset{border:1px solid var(--line);border-radius:6px;margin:0 0 14px;padding:8px 14px 12px;background:#fff}
+  legend{font-weight:600;padding:0 6px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px 16px}
+  .grid label{display:block;font-size:.85rem;font-weight:600} .grid input,.grid select{width:100%;padding:5px}
+  .help{display:block;font-size:.75rem;color:var(--muted);font-weight:400} .errorlist{color:var(--bad);margin:0;padding-left:16px;font-size:.8rem}
+  figure{margin:14px 0}img{max-width:100%}figcaption{font-size:.8rem;color:var(--muted)}
+  .actions{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 16px}
+</style>
+</head>
+<body>
+<header><a href="{% url 'well_list' %}">Petrolog</a><span>Petrophysical evaluation from LAS files</span></header>
+<main>
+  {% for m in messages %}<div class="msg {{ m.tags }}">{{ m }}</div>{% endfor %}
+  {% block content %}{% endblock %}
+</main>
+</body>
+</html>

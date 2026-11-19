@@ -1,0 +1,14 @@
+{% extends "wells/base.html" %}
+{% block title %}{{ analysis.well.name }} evaluation - Petrolog{% endblock %}
+{% block content %}
+<h1>{{ analysis.well.name }} - petrophysical evaluation</h1>
+<p style="color:var(--muted)">Run {{ analysis.created_at|date:"Y-m-d H:i" }} UTC &middot;
+  Suitability: {% if suit.suitable %}<span class="pass">suitable</span>{% else %}<span class="fail">not suitable</span>{% endif %} ({{ suit.score }}/{{ suit.max_score }})</p>
+<div class="actions">
+  <a class="btn" href="{% url 'analysis_download' analysis.pk 'html' %}">Download report (HTML)</a>
+  <a class="btn secondary" href="{% url 'analysis_download' analysis.pk 'md' %}">Markdown</a>
+  <a class="btn secondary" href="{% url 'analysis_download' analysis.pk 'csv' %}">Curves + results (CSV)</a>
+  <a class="btn secondary" href="{{ analysis.well.get_absolute_url }}">Change parameters</a>
+</div>
+<div class="card">{{ report_html }}</div>
+{% endblock %}
